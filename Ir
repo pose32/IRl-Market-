@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>IRI Market</title>
+<style>
+:root{--bg:#f4f4f4;--card:#fff;--ink:#222;--mute:#666;--line:#e3e3e3;--acc:#f26a1b;--accink:#fff;--sell:#fff1e6;--buy:#fdf1e1;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#121614;--card:#1b211e;--ink:#eef2ee;--mute:#9aa6a0;--line:#2c3631;--acc:#ff8a3d;--accink:#2a1200;--sell:#3a2414;--buy:#33281a}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#121614;--card:#1b211e;--ink:#eef2ee;--mute:#9aa6a0;--line:#2c3631;--acc:#ff8a3d;--accink:#2a1200;--sell:#3a2414;--buy:#33281a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--card)}
+.brand{font-weight:800;font-size:20px;letter-spacing:.3px}.brand span{color:var(--acc)}
+main{max-width:860px;margin:0 auto;padding:16px}
+h2{margin:0 0 4px}.sub{color:var(--mute);margin:0 0 16px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
+label{display:block;font-weight:600;margin:12px 0 4px;font-size:14px}
+input,select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px}
+textarea{min-height:110px;resize:vertical}
+button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:9px 14px}
+button.pri{background:var(--acc);color:var(--accink);border-color:var(--acc);font-weight:700}
+button.pri.full{width:100%;margin-top:16px;padding:12px}
+.tabs{display:flex;gap:8px;margin-bottom:16px}.tabs button{flex:1}.tabs button.on{background:var(--acc);color:var(--accink);border-color:var(--acc);font-weight:700}
+.tpls{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.tpl{text-align:left;padding:12px;border-radius:12px}.tpl.on{border:2px solid var(--acc);background:var(--sell)}
+.tpl b{display:block}.tpl small{color:var(--mute)}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.bar input{flex:2 1 160px}.bar select{flex:1 1 110px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.ad{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:6px}
+
+.tag{align-self:flex-start;font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;background:var(--sell)}.ad.Buy .tag{background:var(--buy)}
+.ad h3{margin:2px 0;font-size:18px}.price{font-weight:800;color:var(--acc)}
+.desc{margin:0;white-space:pre-wrap;word-break:break-word;color:var(--mute);display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.ad.open .desc{display:block}.meta{font-size:13px;color:var(--mute)}
+.row{display:flex;gap:8px;margin-top:auto;padding-top:6px}.row button{flex:1;padding:8px}
+.contact{font-weight:600;word-break:break-all}.empty{text-align:center;color:var(--mute);padding:30px 0}
+.note{font-size:13px;color:var(--mute);margin-top:12px}
+.li{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-top:1px solid var(--line)}.li small{display:block;color:var(--mute)}.li div:last-child{display:flex;gap:6px}.two{display:grid;gap:16px}h3.s{margin:18px 0 4px}.ok{color:var(--acc);font-weight:600}
+.pic{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;cursor:zoom-in;background:var(--line)}
+#lb{position:fixed;inset:0;background:rgba(0,0,0,.92);overflow:auto;padding:16px;z-index:50}#lb img{width:100%;max-width:900px;display:block;margin:0 auto 12px;border-radius:10px}
+dialog{border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);width:min(92vw,420px);padding:16px}
+.thumbs{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.thumbs img{width:72px;height:72px;object-fit:cover;border-radius:8px}
+.cur{display:grid;grid-template-columns:110px 1fr;gap:8px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:8px}.chips button{white-space:nowrap;border-radius:99px}.chips button.on{background:var(--acc);color:var(--accink);border-color:var(--acc)}
+#cartBtn{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:20;box-shadow:0 4px 14px rgba(0,0,0,.3);border-radius:99px;padding:12px 18px}
+.qty{display:flex;align-items:center;gap:6px}.qty button{padding:4px 10px}
+main{padding-bottom:90px}
+header{background:var(--acc);color:var(--accink);border:0}.brand span{color:var(--accink);opacity:.8}.meta{color:inherit}
+header button{background:rgba(255,255,255,.2);color:inherit;border-color:rgba(255,255,255,.5)}
+.hero{background:linear-gradient(120deg,var(--acc),#ffb347);color:var(--accink);border-radius:14px;padding:16px;margin-bottom:12px;display:flex;flex-direction:column;gap:2px}.hero b{font-size:20px}.hero span{opacity:.92;font-size:14px}
+.bar input{border:2px solid var(--acc);border-radius:99px;padding:11px 16px}.bar select{border-radius:99px}
+.grid{grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:10px}
+.ad{padding:8px;gap:4px;border-radius:10px}.pic{aspect-ratio:1/1;border-radius:8px}
+.ad h3{font-size:14px;font-weight:600;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.price{font-size:18px}.ad .desc{display:none}.ad.open .desc{display:block;font-size:13px}
+.tag{font-size:11px;padding:2px 8px}.meta{font-size:12px}
+.ad .row{flex-wrap:wrap}.ad .row button{flex:1 1 100%;padding:7px;font-size:14px}
+.tabs button.on,.chips button.on{box-shadow:none}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">IRI <span>Market</span></div>
+  <div><span id="whoName" class="meta"></span> <button id="authBtn">Company login</button></div>
+</header>
+<main>
+  <div class="tabs"><button id="nBrowse" class="on">Browse</button><button id="nPost">Post an ad</button><button id="nOrders" hidden>Orders</button><button id="nAdmin">Admin</button></div>
+
+  <section id="v_browse">
+    <div class="hero"><b>Big deals on IRI Market</b><span>Approved sellers · Pay on delivery or M-Pesa</span></div>
+    <div id="chips" class="chips"></div>
+    <div class="bar">
+      <input id="q" type="search" placeholder="Search ads…">
+      <select id="kind"><option value="">Buy and sell</option><option value="Sell">For sale</option><option value="Buy">Wanted</option></select>
+      <select id="sort"><option value="new">Newest</option><option value="hits">Best hits</option></select>
+    </div>
+    <div id="grid" class="grid"></div>
+  </section>
+
+  <section id="v_login" hidden class="two">
+    <div class="panel"><h2>Company login</h2><p class="sub">Only companies approved by the admin can post ads.</p>
+      <label for="lco">Company name</label><input id="lco" maxlength="60">
+      <label for="lem">Email</label><input id="lem" type="email" maxlength="80">
+      <button id="doLogin" class="pri full">Log in</button><p id="lerr" class="note" role="alert"></p></div>
+    <div class="panel"><h2>Not a member yet?</h2><p class="sub">Send the admin a request. Anyone who wants to buy or sell can ask to join.</p>
+      <label for="rco">Company name</label><input id="rco" maxlength="60">
+      <label for="rem">Email</label><input id="rem" type="email" maxlength="80">
+      <label for="rms">What will you buy or sell?</label><textarea id="rms" maxlength="300"></textarea>
+      <button id="doReq" class="pri full">Send request to admin</button><p id="rerr" class="note" role="alert"></p>
+      <p id="adminContact" class="note"></p></div>
+  </section>
+
+  <section id="v_post" hidden>
+    <div id="postLocked" class="panel" hidden><h2>Members only</h2><p class="sub">To advertise, you must be approved by the admin. Log in, or send a request to join.</p><button id="toLogin" class="pri">Log in or request access</button></div>
+    <div id="postForm" class="panel" hidden>
+      <button id="snap" class="pri full" style="margin:0 0 14px">📷 Take a photo to post</button><input id="cam" type="file" accept="image/*" capture="environment" hidden>
+      <h2>Choose a template</h2><p class="sub">One tap, then paste your advert.</p>
+      <div id="tpls" class="tpls"></div>
+      <label for="ttl">Title</label><input id="ttl" maxlength="80">
+      <label for="prc">Price or budget (optional)</label><div class="cur"><select id="cur"><option value="KSh">KSh</option><option>USD</option><option>EUR</option><option>GBP</option><option>UGX</option><option>TZS</option><option>NGN</option><option>ZAR</option></select><input id="prc" maxlength="40" placeholder="e.g. 2500 or Negotiable"></div><label for="pic">Photos (up to 3, from camera or gallery)</label><input id="pic" type="file" accept="image/*" multiple><div id="thumbs" class="thumbs"></div>
+      <label for="dsc">Paste your advert (optional if you add a photo)</label><textarea id="dsc" maxlength="800"></textarea>
+      <label for="ctc">Contact (optional, your login email is used if empty)</label><input id="ctc" maxlength="80">
+      <button id="submit" class="pri full">Publish ad</button><p id="err" class="note" role="alert"></p>
+    </div>
+  </section>
+
+  <section id="v_admin" hidden>
+    <div id="adminGate" class="panel"><h2 id="gateTitle">Admin</h2><p id="gateSub" class="sub"></p>
+      <label for="aun">Username</label><input id="aun" maxlength="30" autocomplete="username"><label for="apw">Password</label><input id="apw" type="password" maxlength="40" autocomplete="current-password">
+      <button id="doAdmin" class="pri full">Enter</button><p id="aerr" class="note" role="alert"></p></div>
+    <div id="adminPanel" hidden>
+      <div class="panel"><h2>Add a company</h2><p class="sub">Approved companies can log in and post ads. Add as many as you like.</p>
+        <label for="nco">Company name</label><input id="nco" maxlength="60">
+        <label for="nem">Email</label><input id="nem" type="email" maxlength="80">
+        <label for="nrl">Can</label><select id="nrl"><option>Both</option><option>Seller</option><option>Buyer</option></select>
+        <button id="addCo" class="pri full">Add company</button><p id="cerr" class="note" role="alert"></p></div>
+      <div class="panel"><h2>Join requests</h2><div id="reqs"></div></div>
+      <div class="panel"><h2>Approved companies</h2><div id="cos"></div></div>
+      <div class="panel"><h2>Admin contact</h2><p class="sub">Shown to companies who want to join. Remove any ad from the Browse tab.</p>
+        <input id="acn" maxlength="80" placeholder="Email or phone"><label for="atl">M-Pesa till number (optional)</label><input id="atl" maxlength="20" inputmode="numeric"><label for="afe">Delivery fee in KSh per store (optional)</label><input id="afe" type="number" min="0"><button id="saveAc" class="pri full">Save contact</button></div>
+    </div>
+  </section>
+  <section id="v_orders" hidden><h2>Orders</h2><p class="sub">Customers who ordered from your ads.</p><div id="ordList" class="panel"></div></section>
+</main>
+<dialog id="ordDlg"><h2 id="ordTitle">Order</h2>
+  <label for="onm">Your name</label><input id="onm" maxlength="60">
+  <label for="oph">Phone number</label><input id="oph" type="tel" maxlength="30">
+  <label for="oqy">Quantity</label><input id="oqy" type="number" min="1" value="1">
+  <label for="ono">Note (optional)</label><textarea id="ono" maxlength="200" style="min-height:60px"></textarea>
+  <p id="oerr" class="note" role="alert"></p>
+  <div class="row"><button id="oSend" class="pri">Send order</button><button id="oCancel">Cancel</button></div></dialog>
+<button id="cartBtn" class="pri" hidden></button>
+<dialog id="cartDlg"><h2>Your cart</h2><div id="cartList"></div><p id="cartTot" class="note"></p>
+  <label for="cn">Your name</label><input id="cn" maxlength="60">
+  <label for="cp">Phone number</label><input id="cp" type="tel" maxlength="30">
+  <label for="ca">Delivery address</label><input id="ca" maxlength="120" placeholder="Town, estate, building">
+  <label for="cpay">Payment</label><select id="cpay"><option>Pay on delivery</option><option>M-Pesa</option></select>
+  <p id="payInfo" class="note"></p>
+  <label for="cnote">Note (optional)</label><input id="cnote" maxlength="120">
+  <p id="cerr2" class="note" role="alert"></p>
+  <div class="row"><button id="cPlace" class="pri">Place order</button><button id="cClose">Close</button></div></dialog>
+<dialog id="trkDlg"><h2>Track your order</h2><p class="sub">Enter the phone number you ordered with.</p>
+  <input id="tph" type="tel" maxlength="30"><div id="tRes"></div>
+  <div class="row"><button id="tGo" class="pri">Find orders</button><button id="tClose">Close</button></div></dialog>
+<div id="lb" hidden></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const TPL = {
+  product:    {label:"Product for sale", kind:"Sell", icon:"📦", color:"#0f7b5f", hint:"Goods you want to sell", ph:"What it is, condition, sizes or colours, delivery…"},
+  fashion:    {label:"Fashion and clothing", kind:"Sell", icon:"👗", color:"#c2417a", hint:"Clothes, shoes, bags", ph:"Item, sizes, colours, materials, how to order…"},
+  electronics:{label:"Electronics", kind:"Sell", icon:"📱", color:"#2f6fd6", hint:"Phones, laptops, gadgets", ph:"Model, specs, condition, warranty…"},
+  food:       {label:"Food and farm produce", kind:"Sell", icon:"🍎", color:"#6aa31b", hint:"Fresh or packaged food", ph:"Product, quantity per pack, freshness, delivery area…"},
+  property:   {label:"Property", kind:"Sell", icon:"🏠", color:"#8a5a2b", hint:"Rent or sell land and houses", ph:"Location, size, rooms, price terms, viewing times…"},
+  vehicle:    {label:"Vehicles", kind:"Sell", icon:"🚗", color:"#555f6b", hint:"Cars, bikes, trucks", ph:"Make, year, mileage, condition, papers…"},
+  service:    {label:"Service offer", kind:"Sell", icon:"🛠️", color:"#7b4bc4", hint:"Work or services you provide", ph:"What you do, areas you cover, how fast, rates…"},
+  bulk:       {label:"Bulk or wholesale", kind:"Sell", icon:"🏭", color:"#b3541e", hint:"Big orders, special rates", ph:"Minimum order, price breaks, supply time…"},
+  event:      {label:"Promo or event", kind:"Sell", icon:"🎉", color:"#d6a21a", hint:"Offers, launches, events", ph:"What is on, dates, place, special offer…"},
+  wanted:     {label:"Wanted to buy", kind:"Buy", icon:"🔎", color:"#d98a1f", hint:"Tell sellers what you need", ph:"What you need, how many, budget, where…"}
+};
+let ads, companies, requests, orders, cfg, sess, tpl = "product", view = "browse", pics = [], curAd = null, cart = [], cat = "";
+
+function load(k, d){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e){ return d; } }
+function save(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch(e){ return false; } }
+function el(tag, cls, text){ const e = document.createElement(tag); if(cls) e.className = cls; if(text !== undefined) e.textContent = text; return e; }
+const same = (a, b) => a.trim().toLowerCase() === b.trim().toLowerCase();
+const me = () => sess && sess.t === "co" ? companies.find(c => c.id === sess.id) : null;
+const isAdmin = () => !!sess && sess.t === "admin";
+
+function seedAds(){
+  const t = Date.now();
+  return [
+    {id:1, tpl:"product", title:"Fresh farm yams, 50 kg bags", price:"KSh 4,500 per bag", desc:"Harvested this week. Delivery available within the city. Order early for the weekend market.", contact:"sales@greenfarm.example", company:"GreenFarm Ltd", views:41, ts:t-86400000},
+    {id:2, tpl:"service", title:"Logistics and delivery, same day", price:"From KSh 300", desc:"Bikes and vans for small businesses. Tracking link sent on every delivery.", contact:"+000 000 0000", company:"QuickMove", views:57, ts:t-18000000},
+    {id:3, tpl:"wanted", title:"Looking for 20 office chairs", price:"Budget KSh 60,000", desc:"Used or new, ergonomic preferred. Pickup in the city centre.", contact:"buy@brightdesk.example", company:"BrightDesk", views:12, ts:t-3600000}
+  ];
+}
+const seedCos = () => [
+  {id:1, name:"GreenFarm Ltd", email:"sales@greenfarm.example", role:"Both"},
+  {id:2, name:"QuickMove", email:"hello@quickmove.example", role:"Both"},
+  {id:3, name:"BrightDesk", email:"buy@brightdesk.example", role:"Both"}
+];
+
+function go(v){
+  view = v;
+  ["browse","login","post","admin","orders"].forEach(n => $("v_" + n).hidden = n !== v);
+  $("nBrowse").classList.toggle("on", v === "browse");
+  $("nPost").classList.toggle("on", v === "post");
+  $("nAdmin").classList.toggle("on", v === "admin");
+  const m = me(), a = isAdmin();
+  $("nOrders").hidden = !(m || a); $("nOrders").classList.toggle("on", v === "orders");
+  $("whoName").textContent = a ? "Admin" : m ? m.name : "";
+  $("authBtn").textContent = (a || m) ? "Log out" : "Company login";
+  if(v === "browse") renderAds();
+  if(v === "orders") drawOrders();
+  if(v === "login") $("adminContact").textContent = cfg.contact ? "Admin contact: " + cfg.contact : "";
+  if(v === "post"){ $("postLocked").hidden = !!m; $("postForm").hidden = !m; if(m) drawTpls(); }
+  if(v === "admin"){
+    $("adminGate").hidden = a; $("adminPanel").hidden = !a;
+    $("gateTitle").textContent = "Admin login";
+    $("gateSub").textContent = "Only the market owner can add or remove companies.";
+    $("doAdmin").textContent = "Log in";
+    if(a){ drawReqs(); drawCos(); $("acn").value = cfg.contact || ""; $("atl").value = cfg.till || ""; $("afe").value = cfg.fee || ""; }
+  }
+}
+
+function allowed(){
+  const m = me(); if(!m) return [];
+  return Object.keys(TPL).filter(k => m.role === "Both" || (m.role === "Seller" ? TPL[k].kind === "Sell" : TPL[k].kind === "Buy"));
+}
+function drawTpls(){
+  const ok = allowed(); if(!ok.includes(tpl)) tpl = ok[0];
+  $("dsc").placeholder = TPL[tpl].ph;
+  const box = $("tpls"); box.textContent = "";
+  ok.forEach(k => {
+    const t = TPL[k], b = el("button", "tpl" + (k === tpl ? " on" : ""));
+    b.append(el("b", "", t.icon + " " + t.label), el("small", "", t.hint));
+    b.onclick = () => { tpl = k; drawTpls(); };
+    box.append(b);
+  });
+}
+
+function renderAds(){
+  const q = $("q").value.trim().toLowerCase(), kind = $("kind").value, sort = $("sort").value, m = me();
+  const list = ads.filter(a => (!kind || (TPL[a.tpl] || TPL.product).kind === kind) && (!cat || a.tpl === cat) && (!q || (a.title + " " + a.desc + " " + a.company).toLowerCase().includes(q)));
+  list.sort((a, b) => sort === "hits" ? b.views - a.views : b.ts - a.ts);
+  const g = $("grid"); g.textContent = "";
+  if(!list.length){ g.append(el("div", "empty", "No ads found. Approved companies can post the first one!")); return; }
+  list.forEach(a => {
+    const t = TPL[a.tpl] || TPL.product, c = el("div", "ad " + t.kind);
+    if(a.imgs && a.imgs.length){ const im = el("img", "pic"); im.src = a.imgs[0]; im.alt = a.title; im.loading = "lazy"; im.onclick = () => openLb(a.imgs); c.append(im); }
+    c.append(el("span", "tag", t.icon + " " + t.label), el("h3", "", a.title));
+    if(a.price) c.append(el("div", "price", fmt(a)));
+    c.append(el("p", "desc", a.desc), el("div", "meta", a.company + " · " + a.views + " hits"));
+    const ct = el("div", "contact", "Contact: " + a.contact); ct.hidden = true; c.append(ct);
+    const row = el("div", "row"), more = el("button", "", "View contact");
+    more.onclick = () => {
+      if(ct.hidden){ ct.hidden = false; c.classList.add("open"); a.views++; save("iri_ads", ads); more.textContent = "Hide"; }
+      else { ct.hidden = true; c.classList.remove("open"); more.textContent = "View contact"; }
+    };
+    row.append(more);
+    const ord = el("button", "pri", t.kind === "Buy" ? "Send an offer" : "Add to cart");
+    ord.onclick = () => { if(t.kind === "Buy") openOrder(a); else { addCart(a); ord.textContent = "Added ✓"; } }; row.append(ord);
+    if(isAdmin() || (m && same(a.company, m.name))){
+      const del = el("button", "", "Delete");
+      del.onclick = () => { if(confirm("Delete this ad?")){ ads = ads.filter(x => x.id !== a.id); save("iri_ads", ads); renderAds(); } };
+      row.append(del);
+    }
+    c.append(row); g.append(c);
+  });
+}
+
+function addCompany(name, email, role){
+  companies.push({id:Date.now(), name, email, role}); save("iri_cos", companies);
+}
+function drawReqs(){
+  const box = $("reqs"); box.textContent = "";
+  if(!requests.length){ box.append(el("p", "sub", "No pending requests.")); return; }
+  requests.forEach(r => {
+    const li = el("div", "li"), info = el("div"), btns = el("div");
+    info.append(el("b", "", r.name), el("small", "", r.email + " · " + r.msg));
+    const ok = el("button", "pri", "Approve"), no = el("button", "", "Dismiss");
+    ok.onclick = () => { addCompany(r.name, r.email, "Both"); requests = requests.filter(x => x.id !== r.id); save("iri_reqs", requests); drawReqs(); drawCos(); };
+    no.onclick = () => { requests = requests.filter(x => x.id !== r.id); save("iri_reqs", requests); drawReqs(); };
+    btns.append(ok, no); li.append(info, btns); box.append(li);
+  });
+}
+function drawCos(){
+  const box = $("cos"); box.textContent = "";
+  if(!companies.length){ box.append(el("p", "sub", "No companies yet.")); return; }
+  companies.forEach(c => {
+    const li = el("div", "li"), info = el("div"), btns = el("div");
+    info.append(el("b", "", c.name), el("small", "", c.email + " · " + c.role));
+    const rm = el("button", "", "Remove");
+    rm.onclick = () => { if(confirm("Remove " + c.name + "?")){ companies = companies.filter(x => x.id !== c.id); save("iri_cos", companies); drawCos(); } };
+    btns.append(rm); li.append(info, btns); box.append(li);
+  });
+}
+
+const fmt = a => /^[\d.,\s]+$/.test(a.price) ? (a.cur || "KSh") + " " + a.price : a.price;
+function openLb(imgs){ const lb = $("lb"); lb.textContent = ""; imgs.forEach(src => { const i = el("img"); i.src = src; lb.append(i); }); lb.hidden = false; lb.onclick = () => { lb.hidden = true; }; }
+function openOrder(a){ curAd = a; $("ordTitle").textContent = (TPL[a.tpl] || TPL.product).kind === "Buy" ? "Offer to " + a.company : "Order from " + a.company; $("oerr").textContent = ""; $("ordDlg").showModal(); }
+function shrink(file){ return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => { const im = new Image(); im.onload = () => { const k = Math.min(1, 1000 / Math.max(im.width, im.height)), c = document.createElement("canvas"); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); res(c.toDataURL("image/jpeg", 0.72)); }; im.onerror = rej; im.src = r.result; }; r.onerror = rej; r.readAsDataURL(file); }); }
+const STEPS = ["Received", "Preparing", "On the way", "Delivered"];
+const stepOf = o => Math.max(0, STEPS.indexOf(o.status));
+const itemsText = o => o.items ? o.items.map(i => i.title + " × " + i.qty).join(", ") : o.adTitle + " × " + o.qty;
+const stepsText = o => STEPS.map((x, i) => (i <= stepOf(o) ? "●" : "○") + " " + x).join("  ");
+const num = a => { const m = String(a.price || "").match(/\d[\d,]*\.?\d*/); return m ? parseFloat(m[0].replace(/,/g, "")) : NaN; };
+const totals = items => { const t = {}; items.forEach(({c, a}) => { const n = num(a); if(!isNaN(n)){ const k = a.cur || "KSh"; t[k] = (t[k] || 0) + n * c.qty; } }); return t; };
+const totStr = t => Object.keys(t).map(k => k + " " + t[k].toLocaleString()).join(" + ") || "price to be confirmed";
+const cartItems = () => cart.map(c => ({c, a: ads.find(x => x.id === c.id)})).filter(x => x.a);
+function saveCart(){ save("iri_cart", cart); updateCart(); }
+function updateCart(){ const it = cartItems(), n = it.reduce((s, x) => s + x.c.qty, 0); $("cartBtn").hidden = !n; $("cartBtn").textContent = "🛒 Cart (" + n + ") · " + totStr(totals(it)); }
+function addCart(a){ const f = cart.find(x => x.id === a.id); if(f) f.qty++; else cart.push({id:a.id, qty:1}); saveCart(); }
+function payInfo(){ $("payInfo").textContent = $("cpay").value === "M-Pesa" ? (cfg.till ? "Pay to M-Pesa till " + cfg.till + ". The seller will confirm your payment." : "The seller will send you M-Pesa payment details.") : "Pay cash or M-Pesa when your order arrives."; }
+function drawCart(){
+  const items = cartItems(), box = $("cartList"); box.textContent = "";
+  if(!items.length){ if($("cartDlg").open) $("cartDlg").close(); return; }
+  items.forEach(({c, a}) => {
+    const li = el("div", "li"), info = el("div"), q = el("div", "qty");
+    info.append(el("b", "", a.title), el("small", "", a.company + " · " + (a.price ? fmt(a) : "price to be confirmed")));
+    const mi = el("button", "", "−"), pl = el("button", "", "+");
+    mi.onclick = () => { c.qty--; if(c.qty < 1) cart = cart.filter(x => x !== c); saveCart(); drawCart(); };
+    pl.onclick = () => { c.qty++; saveCart(); drawCart(); };
+    q.append(mi, el("span", "", String(c.qty)), pl); li.append(info, q); box.append(li);
+  });
+  const fee = parseFloat(cfg.fee) || 0;
+  $("cartTot").textContent = "Items: " + totStr(totals(items)) + (fee ? " · Delivery: KSh " + fee.toLocaleString() + " per store" : "");
+  payInfo();
+}
+function drawChips(){
+  const b = $("chips"); b.textContent = "";
+  [["", "All"]].concat(Object.keys(TPL).map(k => [k, TPL[k].icon + " " + TPL[k].label])).forEach(([k, l]) => {
+    const c = el("button", k === cat ? "on" : "", l); c.onclick = () => { cat = k; drawChips(); renderAds(); }; b.append(c);
+  });
+  const t = el("button", "", "📍 Track order"); t.onclick = () => { $("tRes").textContent = ""; $("trkDlg").showModal(); }; b.append(t);
+}
+function drawOrders(){
+  const m = me(), box = $("ordList"); box.textContent = "";
+  const list = (isAdmin() ? orders : orders.filter(o => m && same(o.company, m.name))).slice().sort((x, y) => y.ts - x.ts);
+  if(!list.length){ box.append(el("p", "sub", "No orders yet.")); return; }
+  list.forEach(o => {
+    const li = el("div", "li"), info = el("div"), btns = el("div"), s = stepOf(o);
+    info.append(el("b", "", itemsText(o)), el("small", "", [o.name, o.phone, o.address, o.pay, o.total, o.note, isAdmin() ? o.company : ""].filter(Boolean).join(" · ")), el("small", "", stepsText(o)));
+    if(s < STEPS.length - 1){ const nx = el("button", "pri", "Mark: " + STEPS[s + 1]); nx.onclick = () => { o.status = STEPS[s + 1]; save("iri_ord", orders); drawOrders(); }; btns.append(nx); }
+    const rm = el("button", "", "Delete");
+    rm.onclick = () => { orders = orders.filter(x => x.id !== o.id); save("iri_ord", orders); drawOrders(); };
+    btns.append(rm); li.append(info, btns); box.append(li);
+  });
+}
+$("cartBtn").onclick = () => { drawCart(); if(cart.length) $("cartDlg").showModal(); };
+$("cpay").onchange = payInfo;
+$("cClose").onclick = () => $("cartDlg").close();
+$("tClose").onclick = () => $("trkDlg").close();
+$("cPlace").onclick = () => {
+  const n = $("cn").value.trim(), p = $("cp").value.trim(), ad = $("ca").value.trim();
+  if(!n || !p || !ad){ $("cerr2").textContent = "Please add your name, phone and delivery address."; return; }
+  const by = {}; cartItems().forEach(x => (by[x.a.company] = by[x.a.company] || []).push(x));
+  Object.keys(by).forEach(co => {
+    const g = by[co], fee = parseFloat(cfg.fee) || 0;
+    orders.push({id:Date.now() + Math.random(), company:co, items:g.map(x => ({title:x.a.title, qty:x.c.qty})), total:totStr(totals(g)) + (fee ? " + KSh " + fee + " delivery" : ""), name:n, phone:p, address:ad, pay:$("cpay").value, note:$("cnote").value.trim(), ts:Date.now(), status:"Received"});
+  });
+  save("iri_ord", orders); cart = []; saveCart(); $("cartDlg").close(); $("cerr2").textContent = "";
+  alert("Order placed! Track it with your phone number.");
+};
+$("tGo").onclick = () => {
+  const p = $("tph").value.trim(), box = $("tRes"); box.textContent = "";
+  const l = p ? orders.filter(o => o.phone === p).sort((x, y) => y.ts - x.ts) : [];
+  if(!l.length) box.append(el("p", "sub", "No orders found for that number on this device."));
+  l.forEach(o => { const d = el("div", "li"), i = el("div"); i.append(el("b", "", o.company + " · " + o.status), el("small", "", itemsText(o)), el("small", "", stepsText(o))); d.append(i); box.append(d); });
+};
+$("nOrders").onclick = () => go("orders");
+$("oCancel").onclick = () => $("ordDlg").close();
+$("oSend").onclick = () => {
+  const n = $("onm").value.trim(), p = $("oph").value.trim(), q = Math.max(1, parseInt($("oqy").value) || 1);
+  if(!n || !p){ $("oerr").textContent = "Please add your name and phone number."; return; }
+  orders.push({id:Date.now(), company:curAd.company, items:[{title:"Offer: " + curAd.title, qty:q}], name:n, phone:p, note:$("ono").value.trim(), ts:Date.now(), status:"Received"});
+  save("iri_ord", orders); ["onm","oph","ono"].forEach(i => $(i).value = ""); $("oqy").value = 1;
+  $("ordDlg").close(); alert("Sent to " + curAd.company + ". They will contact you.");
+};
+$("snap").onclick = () => $("cam").click();
+$("cam").onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ""; if(!f || pics.length >= 3) return;
+  try { const d = await shrink(f); pics.push(d); const t = el("img"); t.src = d; $("thumbs").append(t); $("ttl").focus(); } catch(x){}
+};
+$("pic").onchange = async e => {
+  pics = []; $("thumbs").textContent = "";
+  for(const f of Array.from(e.target.files).slice(0, 3)){ try { const d = await shrink(f); pics.push(d); const t = el("img"); t.src = d; $("thumbs").append(t); } catch(x){} }
+};
+$("nBrowse").onclick = () => go("browse");
+$("nPost").onclick = () => go("post");
+$("nAdmin").onclick = () => go("admin");
+$("toLogin").onclick = () => go("login");
+$("authBtn").onclick = () => {
+  if(isAdmin() || me()){ sess = null; save("iri_sess", null); go(view === "admin" ? "browse" : view); }
+  else go("login");
+};
+["q","kind","sort"].forEach(i => $(i).addEventListener("input", renderAds));
+
+$("doLogin").onclick = () => {
+  const n = $("lco").value, e = $("lem").value;
+  const c = companies.find(x => same(x.name, n) && same(x.email, e));
+  if(!c){ $("lerr").textContent = "No approved company matches those details. Send a request on this page or contact the admin."; return; }
+  sess = {t:"co", id:c.id}; save("iri_sess", sess); $("lerr").textContent = ""; go("post");
+};
+$("doReq").onclick = () => {
+  const n = $("rco").value.trim(), e = $("rem").value.trim(), m = $("rms").value.trim();
+  if(!n || !e.includes("@") || !m){ $("rerr").textContent = "Please fill in all three fields."; return; }
+  requests.push({id:Date.now(), name:n, email:e, msg:m}); save("iri_reqs", requests);
+  ["rco","rem","rms"].forEach(i => $(i).value = "");
+  $("rerr").textContent = "Request sent. The admin will approve you soon."; $("rerr").className = "note ok";
+};
+$("submit").onclick = () => {
+  const m = me(), title = $("ttl").value.trim(), desc = $("dsc").value.trim(), contact = $("ctc").value.trim();
+  if(!m) return go("post");
+  if(!title || (!desc && !pics.length)){ $("err").textContent = "Please add a title and a photo or advert text."; return; }
+  const d2 = desc || title, c2 = contact || m.email;
+  ads.push({id:Date.now(), tpl, title, price:$("prc").value.trim(), cur:$("cur").value, imgs:pics, desc:d2, contact:c2, company:m.name, views:0, ts:Date.now()});
+  if(!save("iri_ads", ads)){ ads.pop(); $("err").textContent = "Not enough storage for these photos. Use fewer or smaller photos."; return; }
+  pics = []; $("thumbs").textContent = ""; $("pic").value = "";
+  ["ttl","prc","dsc","ctc"].forEach(i => $(i).value = ""); $("err").textContent = "";
+  go("browse");
+};
+const ADMIN_USER = "brown", ADMIN_HASH = "0af51d38ea7219db49ee2994fc6f2d7e7cdf40a7e2b20a3cf4a677c6de487027";
+async function sha(t){
+  const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t));
+  return Array.from(new Uint8Array(b)).map(x => x.toString(16).padStart(2, "0")).join("");
+}
+$("doAdmin").onclick = async () => {
+  const u = $("aun").value.trim().toLowerCase(), p = $("apw").value;
+  let ok = false;
+  try { ok = u === ADMIN_USER && (await sha(p)) === ADMIN_HASH; }
+  catch(e){ $("aerr").textContent = "Login needs a secure (https) page."; return; }
+  if(!ok){ $("aerr").textContent = "Wrong username or password."; return; }
+  sess = {t:"admin"}; save("iri_sess", sess); $("apw").value = ""; $("aerr").textContent = ""; go("admin");
+};
+$("addCo").onclick = () => {
+  const n = $("nco").value.trim(), e = $("nem").value.trim();
+  if(!n || !e.includes("@")){ $("cerr").textContent = "Enter a company name and a valid email."; return; }
+  addCompany(n, e, $("nrl").value); $("nco").value = ""; $("nem").value = ""; $("cerr").textContent = ""; drawCos();
+};
+$("saveAc").onclick = () => { cfg.contact = $("acn").value.trim(); cfg.till = $("atl").value.trim(); cfg.fee = $("afe").value.trim(); save("iri_cfg", cfg); };
+
+ads = load("iri_ads", null); if(!ads){ ads = seedAds(); save("iri_ads", ads); }
+companies = load("iri_cos", null); if(!companies){ companies = seedCos(); save("iri_cos", companies); }
+requests = load("iri_reqs", []);
+orders = load("iri_ord", []);
+cfg = load("iri_cfg", {pass:"", contact:""});
+sess = load("iri_sess", null);
+cart = load("iri_cart", []);
+go("browse"); drawChips(); updateCart();
+</script>
+</body>
+</html>
